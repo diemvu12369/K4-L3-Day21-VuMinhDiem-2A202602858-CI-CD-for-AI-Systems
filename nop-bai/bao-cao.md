@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Họ và tên | Vũ Minh Diểm |
+| Họ và tên | Vũ Minh Điềm |
 | MSSV | 202602858 |
 | Lớp / Khóa | K4 |
 | Repo GitHub | https://github.com/diemvu12369/K4-L3-Day21-VuMinhDiem-2A202602858-CI-CD-for-AI-Systems |
