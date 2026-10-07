@@ -1,10 +1,12 @@
+# Báo Cáo Lab Day 21 - CI/CD cho AI Systems
+
 | | |
 |---|---|
 | Họ và tên | Vũ Minh Diểm |
 | MSSV | 202602858 |
 | Lớp / Khóa | K4 |
 | Repo GitHub | https://github.com/diemvu12369/K4-L3-Day21-VuMinhDiem-2A202602858-CI-CD-for-AI-Systems |
-| Ngày nộp | 2026-10-07 |
+| Ngày nộp | 2026-10-08 |
 
 ---
 
@@ -32,9 +34,9 @@ Dữ liệu Adult có khoảng 24,8% mẫu thuộc lớp thu nhập cao. Một m
 
 | Khó khăn | Nguyên nhân | Cách giải quyết |
 |---|---|---|
-| MLflow không chạy | Dependency mlflow/SQLAlchemy/alembic chưa tương thích | Cài đúng phiên bản trước khi track |
-| Nhầm lẫn accuracy với F1 | Dữ liệu mất cân bằng | Chọn f1_score của lớp dương làm mục tiêu |
-| Kiểm tra sau thêm dữ liệu | Dữ liệu đổi batch liên tục | Chạy lại train và so sánh metric |
+| `gcloud iam service-accounts keys create` bị từ chối | Organization bật sẵn chính sách `iam.disableServiceAccountKeyCreation` | Tắt ràng buộc này riêng cho project lab bằng `org-policies disable-enforce`, rồi tạo lại key |
+| `train_batch1.csv` ở máy đã bị ghép sẵn batch2 trước Bước 2 | Đã chạy thử `append_batch.py` từ sớm | Chạy lại `prepare_data.py` (random_state=42) để có lại 22.361 mẫu gốc trước khi `dvc add` |
+| `dvc pull` trên CI có nguy cơ lỗi vì không có file `sa-key.json` | `credentialpath` nằm trong `.dvc/config` được commit | Đặt `credentialpath` trong `.dvc/config.local`, CI xác thực qua `GOOGLE_APPLICATION_CREDENTIALS` |
 
 ---
 
@@ -45,14 +47,5 @@ Dữ liệu Adult có khoảng 24,8% mẫu thuộc lớp thu nhập cao. Một m
 | Bước 2 (chỉ `train_batch1`) | 0.7149 | 0.8740 |
 | Bước 3 (thêm `train_batch2`) | 0.7354 | 0.8820 |
 
-**Nhận xét:** Sau khi bổ sung dữ liệu mới, f1_score tăng từ 0.7149 lên 0.7354, và accuracy tăng từ 0.8740 lên 0.8820. Kết quả này hợp lý vì dữ liệu mới cùng phân phối với dữ liệu cũ, nên mô hình cải thiện nhẹ nhưng rõ ràng, không cần đưa ra kết luận sai rằng “thêm dữ liệu luôn tốt hơn”.
+**Nhận xét:** Khi bổ sung 22.361 mẫu mới, f1_score tăng 0,0205 (0,7149 → 0,7354) và accuracy tăng 0,008 (0,8740 → 0,8820), cả hai lần đều qua quality gate và được triển khai tự động. Mức tăng nhỏ vì batch2 được chia ngẫu nhiên từ cùng phân phối, nên nhiều khả năng chỉ giúp mô hình `max_depth=5` ước lượng ổn định hơn chứ không mang thông tin mới; holdout chỉ 500 mẫu nên chênh lệch này cũng nằm gần mức dao động, không đủ để kết luận thêm dữ liệu luôn tốt hơn.
 
----
-
-## 5. Phần Bonus Đã Thực Hiện (nếu có)
-
-- [ ] Bonus 1 - Tracking MLflow từ xa với DagsHub: chưa thực hiện
-- [ ] Bonus 2 - Điều chỉnh ngưỡng quyết định: chưa thực hiện
-- [ ] Bonus 3 - Báo cáo precision / recall tự động: chưa thực hiện
-- [ ] Bonus 4 - Hoàn trả về phiên bản trước: chưa thực hiện
-- [ ] Bonus 5 - Cảnh báo lệch lạc dữ liệu: chưa thực hiện
