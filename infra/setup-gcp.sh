@@ -9,6 +9,7 @@ BUCKET=income-lab-diemvu-2a202602858
 ZONE=us-central1-a
 SA=income-lab-sa@$PROJECT.iam.gserviceaccount.com
 DEPLOY_KEY=$HOME/.ssh/income_deploy
+REPO=diemvu12369/K4-L3-Day21-VuMinhDiem-2A202602858-CI-CD-for-AI-Systems
 
 echo "== 2.1 Bucket"
 gcloud storage buckets describe gs://$BUCKET --format="value(name)" >/dev/null 2>&1 \
@@ -19,7 +20,7 @@ gcloud iam service-accounts describe $SA --project $PROJECT >/dev/null 2>&1 \
   || gcloud iam service-accounts create income-lab-sa --display-name "Income Lab SA" --project $PROJECT
 gcloud storage buckets add-iam-policy-binding gs://$BUCKET \
   --member serviceAccount:$SA --role roles/storage.objectAdmin --format=none
-[ -f sa-key.json ] || gcloud iam service-accounts keys create sa-key.json --iam-account $SA
+[ -s sa-key.json ] || gcloud iam service-accounts keys create sa-key.json --iam-account $SA
 
 echo "== 2.8 SSH key cho GitHub Actions"
 mkdir -p "$HOME/.ssh"
@@ -49,12 +50,12 @@ done
 
 echo "== 2.9 GitHub Secrets"
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-  gh secret set STORAGE_CREDENTIALS < sa-key.json
-  gh secret set ARTIFACT_BUCKET --body "$BUCKET"
-  gh secret set SERVER_HOST --body "$VM_IP"
-  gh secret set SERVER_USER --body "deploy"
-  gh secret set SERVER_SSH_KEY < "$DEPLOY_KEY"
-  gh secret list
+  gh secret set STORAGE_CREDENTIALS -R $REPO < sa-key.json
+  gh secret set ARTIFACT_BUCKET -R $REPO --body "$BUCKET"
+  gh secret set SERVER_HOST -R $REPO --body "$VM_IP"
+  gh secret set SERVER_USER -R $REPO --body "deploy"
+  gh secret set SERVER_SSH_KEY -R $REPO < "$DEPLOY_KEY"
+  gh secret list -R $REPO
 else
   echo "Chua co gh CLI da dang nhap. Tu them 5 secrets tai Settings > Secrets and variables > Actions:"
   echo "  STORAGE_CREDENTIALS = noi dung file sa-key.json"

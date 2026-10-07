@@ -64,7 +64,7 @@ def score(req: ScoreRequest):
         relationship, sex, capital_gain, capital_loss, hours_per_week
     """
     if len(req.features) != 10:
-        raise HTTPException(status_code=400, detail="Expected 10 features")
+        raise HTTPException(status_code=400, detail="Expected 10 features (adult income)")
 
     if model is None:
         raise HTTPException(status_code=503, detail="Model is not available")
